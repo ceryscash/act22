@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+venv/
+.env
+.idea/
+*.log
+*.pot
+*.pyc
+__pycache__/
+.env
+.venv
+env/
+venv/
+ENV/

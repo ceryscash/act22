@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis</title>
+<style>
+    .analysis-section {
+        background: white;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .error {
+        color: #dc3545;
+        padding: 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+    }
+    .loading {
+        display: none;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+    <h1>Stock Analysis</h1>
+    <input type="text" id="stockSymbol" placeholder="Enter stock symbol">
+    <button onclick="analyzeStock()">Analyze</button>
+
+    <div class="loading">Loading...</div>
+    <div id="result"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <script>
+    function analyzeStock() {
+        const stockSymbol = document.getElementById('stockSymbol').value;
+        if (!stockSymbol) {
+            alert('Please enter a stock symbol');
+            return;
+        }
+
+        $('.loading').show();
+        $('#result').html('');
+
+        fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ stock_symbol: stockSymbol })
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('.loading').hide();
+            if (data.success) {
+                let output = '';
+                for (const [role, analysis] of Object.entries(data.results)) {
+                    output += `<div class="analysis-section">
+                        <h3>${role}</h3>
+                        <pre>${analysis}</pre>
+                    </div>`;
+                }
+                $('#result').html(output);
+            } else {
+                $('#result').html(`<div class="error">Error: ${data.error}</div>`);
+            }
+        })
+        .catch(error => {
+            $('.loading').hide();
+            $('#result').html(`<div class="error">Error: ${error.message}</div>`);
+        });
+    }
+</script>
+
+
+
+</body>
+</html>
